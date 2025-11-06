@@ -1,5 +1,8 @@
 package entities;
 
+/**
+ * Represents delivery of item
+ */
 public class Delivery {
 
     private int deliveryId;
@@ -8,6 +11,14 @@ public class Delivery {
     private int deliveryTime;
     private double deliveryPrice;
 
+    /**
+     *
+     * @param deliveryId
+     * @param orderId
+     * @param deliveryCompanyName
+     * @param deliveryTime
+     * @param deliveryPrice
+     */
     public Delivery(int deliveryId, int orderId, String deliveryCompanyName, int deliveryTime, double deliveryPrice) {
         this.deliveryId = deliveryId;
         this.orderId = orderId;

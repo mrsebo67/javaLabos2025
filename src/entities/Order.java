@@ -2,7 +2,10 @@ package entities;
 
 import java.time.LocalDateTime;
 
-public class Order {
+/**
+ * Represents whole ordere including all parties
+ */
+public class Order implements IsDone {
 
     private int orderId;
     private int customerId;
@@ -10,7 +13,17 @@ public class Order {
     private MenuItem[] menuItems;
     private double price;
     private int orderTime;
+    private boolean isDone;
 
+    /**
+     *
+     * @param orderId
+     * @param customerId
+     * @param restaurantId
+     * @param menuItems
+     * @param price
+     * @param orderTime
+     */
     public Order(int orderId, int customerId, int restaurantId, MenuItem[] menuItems, double price, int orderTime) {
         this.orderId = orderId;
         this.customerId = customerId;
@@ -18,6 +31,7 @@ public class Order {
         this.menuItems = menuItems;
         this.price = price;
         this.orderTime = orderTime;
+        this.isDone = false;
     }
 
     public int getOrderTime() {
@@ -91,5 +105,11 @@ public class Order {
             }
         }
         return priciest;
+    }
+
+    @Override
+    public void toggleIsDone() {
+        this.isDone = !this.isDone;
+
     }
 }

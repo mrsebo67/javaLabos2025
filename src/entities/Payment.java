@@ -2,6 +2,9 @@ package entities;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents transaction between all three parties
+ */
 public class Payment {
 
     private int paymentId;
@@ -11,6 +14,15 @@ public class Payment {
     private double paymentAmount;
     private LocalDateTime paymentDate;
 
+    /**
+     *
+     * @param paymentId
+     * @param orderId
+     * @param customerId
+     * @param restaurantId
+     * @param paymentAmount
+     * @param paymentDate
+     */
     public Payment(int paymentId, int orderId, int customerId, int restaurantId, double paymentAmount, LocalDateTime paymentDate) {
         this.paymentId = paymentId;
         this.orderId = orderId;

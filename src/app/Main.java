@@ -2,11 +2,21 @@ package app;
 
 import entities.*;
 
+import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Runs the whole project
+ */
 public class Main {
 
     public static void main(String[] args) {
+
+        final Logger logger = LoggerFactory.getLogger(Main.class);
 
 
         Scanner scanner = new Scanner(System.in);
@@ -15,27 +25,73 @@ public class Main {
         for (int i = 0; i < addresses.length; i++) {
             System.out.println("Enter details for address " + (i + 1) + ":");
 
-            System.out.print("Address ID: ");
-            int id = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                System.out.print("Address ID: ");
+                int id = 0;
+                try {
+                    id = scanner.nextInt();
+                } catch (InputMismatchException e) {
+                    logger.error("Address ID must be a valid number!");
+                    throw new WrongNumberFormatException(id);
 
-            System.out.print("Street: ");
-            String street = scanner.nextLine();
+                }
+                scanner.nextLine(); // clear buffer
 
-            System.out.print("City: ");
-            String city = scanner.nextLine();
+                System.out.print("Street: ");
+                String street = scanner.nextLine().trim();
+                if (street.matches("\\d+")) {
+                    logger.error("Street cannot contain only numbers!");
+                    throw new NumbersInStringException("Street cannot contain numbers!");
 
-            System.out.print("ZIP Code: ");
-            String zipCode = scanner.nextLine();
+                }
 
-            System.out.print("State: ");
-            String state = scanner.nextLine();
+                System.out.print("City: ");
+                String city = scanner.nextLine().trim();
+                if (city.matches("\\d+")) {
+                    logger.error("Wrong city format!");
+                    throw new NumbersInStringException("City cannot contain numbers!");
 
-            System.out.print("House number: ");
-            int houseNumber = scanner.nextInt();
-            scanner.nextLine();
+                }
 
-            addresses[i] = new Address(id, street, city, zipCode, state, houseNumber);
+                System.out.print("ZIP Code: ");
+                int zipCode = 0;
+                try {
+                    zipCode = scanner.nextInt();
+                } catch (InputMismatchException e) {
+                    logger.error("Wrong zip code!");
+                    throw new WrongNumberFormatException(zipCode);
+
+                }
+                scanner.nextLine(); // clear buffer
+
+                System.out.print("State: ");
+                String state = scanner.nextLine().trim();
+                if (state.matches("\\d+")) {
+                    logger.error("Wrong state!");
+                    throw new NumbersInStringException("State cannot contain numbers!");
+
+                }
+
+                System.out.print("House number: ");
+                int houseNumber = 0;
+                try {
+                    houseNumber = scanner.nextInt();
+                } catch (InputMismatchException e) {
+                    logger.error("Wrong house number!");
+                    throw new WrongNumberFormatException(houseNumber);
+
+                }
+                scanner.nextLine(); // clear buffer
+
+                addresses[i] = new Address(id, street, city, zipCode, state, houseNumber);
+                System.out.println(" Address saved successfully!\n");
+                logger.info("Added new address");
+
+            } catch (NegativeIdException | NumbersInStringException e) {
+                System.out.println(" Input error: " + e.getMessage());
+                i--;
+                scanner.nextLine();
+            }
         }
 
         for (Address address : addresses) {
@@ -52,34 +108,55 @@ public class Main {
         for (int i = 0; i < users.length; i++) {
             System.out.println("Enter details for user " + (i + 1) + ":");
 
-            System.out.print("User ID: ");
-            int id = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                System.out.print("User ID: ");
+                int id = 0;
+                try {
+                    id = scanner.nextInt();
+                    if (id < 0) {
+                        throw new NegativeIdException(id);
+                    }
+                } catch (InputMismatchException e) {
+                    logger.error("Wrong user ID!");
+                    throw new WrongNumberFormatException(id);
 
-            System.out.print("First name: ");
-            String name = scanner.nextLine();
+                }
+                scanner.nextLine();
 
-            System.out.print("Surname: ");
-            String surname = scanner.nextLine();
+                System.out.print("First name: ");
+                String name = scanner.nextLine();
 
-            System.out.print("Email: ");
-            String email = scanner.nextLine();
+                System.out.print("Surname: ");
+                String surname = scanner.nextLine();
 
-            System.out.print("Phone: ");
-            String phone = scanner.nextLine();
+                System.out.print("Email: ");
+                String email = scanner.nextLine();
+                if (!email.contains("@")) {
+                    logger.error("Invalid email!");
+                    throw new WrongEmailException("Email must contain '@'!");
 
+                }
 
-            users[i] = new User(id, name, surname, email, phone, addresses[1]);
+                System.out.print("Phone: ");
+                String phone = scanner.nextLine();
 
+                users[i] = new User(id, name, surname, email, phone, addresses[0]);
+                System.out.println(" User saved successfully!\n");
+                logger.info("Added new user");
+
+            } catch (WrongEmailException | WrongNumberFormatException e) {
+                System.out.println(" Input error: " + e.getMessage());
+                i--;
+                scanner.nextLine();
+            }
         }
-
         for (User user : users) {
-            Address a = user.getUserAddress();
+            Address a = user.userAddress();
             System.out.println(
-                    "ID: " + user.getUserId() +
-                            ", Name: " + user.getUserName() + " " + user.getUserSurname() +
-                            ", Email: " + user.getUserEmail() +
-                            ", Phone: " + user.getUserPhone() +
+                    "ID: " + user.userId() +
+                            ", Name: " + user.userName() + " " + user.userSurname() +
+                            ", Email: " + user.userEmail() +
+                            ", Phone: " + user.userPhone() +
                             ", Address: " + a.getStreet() + " " + a.getHouseNumber() + ", " +
                             a.getCity() + ", " + a.getState() + " " + a.getZipCode()
             );
@@ -103,7 +180,17 @@ public class Main {
             double price = scanner.nextDouble();
             scanner.nextLine();
 
-            menuItems[i] = new MenuItem(id, name, description, price);
+            menuItems[i] = new Food(id, name, description, price, 100, 100);
+            logger.info("Added menu item");
+        }
+
+        for (MenuItem menuItem : menuItems) {
+            System.out.println(
+                   "ID: " + menuItem.getMenuItemId() +
+                           " Item name: " + menuItem.getMenuItemName() +
+                           " Item description: " + menuItem.getMenuItemDescription() +
+                           " Item price: " + menuItem.getMenuItemPrice()
+            );
         }
 
         Restaurant[] restaurants = new Restaurant[5];
@@ -116,9 +203,15 @@ public class Main {
             System.out.print("Restaurant name: ");
             String name = scanner.nextLine();
 
-            restaurants[i] = new Restaurant(id, name, addresses[2], menuItems);
+            restaurants[i] = new Restaurant.Builder()
+                    .restaurantId(id)
+                    .restaurantName(name)
+                    .restaurantAddress(addresses[2])
+                    .menuItems(menuItems)
+                    .build();
 
 
+            logger.info("Added new restaurant");
         }
 
         for (Restaurant r : restaurants) {
@@ -156,7 +249,18 @@ public class Main {
             scanner.nextLine();
 
             orders[i] = new Order(orderId,customerId, restaurantId, menuItems, price, orderTime);
+            logger.info("Added new order");
 
+        }
+
+        for (Order order : orders) {
+            System.out.println(
+                   "Order ID: " + order.getOrderId() +
+                           " Customer ID: " + order.getCustomerId() +
+                           " Restaurant ID:  " + order.getRestaurantId() +
+                           " Order time: " + order.getOrderTime()
+
+            );
         }
 
     }

@@ -1,16 +1,29 @@
 package entities;
 
+
+/**
+ * Represents a physical address.
+ */
 public class Address {
 
     private int addressId;
     private String street;
     private String city;
-    private String zipCode;
+    private int zipCode;
     private String state;
     private int houseNumber;
 
-
-    public Address(int addressId, String street, String city, String zipCode, String state, int houseNumber) {
+    /**
+     * Constructs an {@code Address} with the given parameters.
+     *
+     * @param addressId   Unique identifier for the address.
+     * @param street      Street name of the address.
+     * @param city        City where the address is located.
+     * @param zipCode     ZIP or postal code.
+     * @param state       State or region of the address.
+     * @param houseNumber House number within the street.
+     */
+    public Address(int addressId, String street, String city, int zipCode, String state, int houseNumber) {
         this.addressId = addressId;
         this.street = street;
         this.city = city;
@@ -43,11 +56,11 @@ public class Address {
         this.city = city;
     }
 
-    public String getZipCode() {
+    public int getZipCode() {
         return zipCode;
     }
 
-    public void setZipCode(String zipCode) {
+    public void setZipCode(int zipCode) {
         this.zipCode = zipCode;
     }
 
